@@ -1,0 +1,111 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+h2 {
+    color: #666;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="tel"],
+input[type="email"],
+select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+input[type="submit"] {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+
+/* Style for the checkbox container */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+/* Style for the checkbox input */
+.checkbox-container input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+/* Style for the label */
+.checkbox-container label {
+    font-size: 14px; /* Adjust the font size to make it smaller */
+    font-weight:normal; /* Set the font weight to normal to avoid bold text */
+    color: #333; /* Optional: Set the font color */
+}
+
+     /* Green banner styling */
+     .success-banner {
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+/* Updated close button styling */
+.success-banner .close {
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    margin-left: auto; /* Pushes the close button to the far right */
+    padding-right: 20px; /* Adjust this value to move the button further right */
+}
+
+/* Hide the banner when the hidden class is applied */
+.success-banner.hidden {
+    display: none;
+}
+
+

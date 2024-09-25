@@ -1,0 +1,78 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container for the main content */
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading styles */
+h2, h3 {
+    text-align: center;
+    color: #333;
+}
+
+/* Success and error messages */
+p {
+    text-align: center;
+    font-size: 16px;
+}
+
+p.success {
+    color: green;
+    font-weight: bold;
+}
+
+p.error {
+    color: red;
+    font-weight: bold;
+}
+
+/* Course list styling */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.enroll-container ul li {
+    padding: 10px;
+    margin: 8px 0;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+/* Submit button styling */
+input[type="submit"] {
+    display: block;
+    width: 20%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-left: 40%;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
