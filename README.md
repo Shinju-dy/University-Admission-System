@@ -38,3 +38,43 @@ The University Registration System is a web-based application designed to stream
 1. Clone the repository to your local machine:
    ```bash
    git clone https://github.com/shinju-dy/UniversityRegistrationSystem.git
+   
+2. Install and configure XAMPP or another local development environment that supports PHP and MySQL.
+
+3. Import the UniversityRegistration.sql file into MySQL to create the necessary database and tables:
+
+
+4. mysql -u root -p < UniversityRegistration.sql
+   Update the database connection details in the PHP files if necessary (host, username, password, etc.).
+
+5. Start the XAMPP server and navigate to the web application at:
+http://localhost/UniversityRegistrationSystem/
+
+## Usage
+
+Admin Panel:
+Admins can log in to review applications, accept or reject students, and manage enrolled students and courses.
+
+Student Login:
+Once accepted, students can log in using their student ID and date of birth to access their profile and enroll in courses.
+
+Course Enrollment:
+Students can enroll in a maximum of 5 courses each semester.
+
+## Contributing
+If you would like to contribute to this project, please follow these steps:
+
+## Fork the repository.
+Create a new branch for your feature or bug fix.
+Make your changes and commit them with clear and concise messages.
+Push your changes to your fork.
+Create a pull request to merge your changes into the main branch.
+
+## License
+This project is licensed under the MIT License. You are free to use, modify, distribute, and sublicense the software according to the terms of the MIT License.
+
+## Contact
+For any questions or inquiries, please contact:
+pearl.darkowaa@gmail.com
++233555491813
+Pearl Darkowaa Yeboah
