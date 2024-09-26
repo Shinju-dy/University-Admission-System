@@ -22,14 +22,13 @@ $male_students = $conn->query($sql_male_students)->fetch_assoc()['male_students'
 $female_students = $conn->query($sql_female_students)->fetch_assoc()['female_students'];
 
 // Search a student by student_id
-// Search a student by student_id
 $searched_student = null;
 if (isset($_POST['search_student'])) {
     $student_id = $_POST['student_id'];
     $sql_student = "SELECT s.student_id, s.first_name, s.middle_name, s.last_name, s.birthdate, s.gender, s.phone_number,
     g.guardian_first_name, g.guardian_last_name, g.guardian_relation, g.guardian_occupation, g.guardian_contact_number,
     s.shs_name, s.wassce_index_number, s.email, s.nationality, s.session, ad.country, ad.region, ad.house_address, 
-    s.student_level, f.amount_paid, s.registration_status, s.consent_to_keep_data, p.Name as programme_name
+    s.student_level, f.amount_paid, s.registration_status, p.Name as programme_name
     FROM students s
     JOIN Programme p ON s.programme_id = p.Programme_id
     LEFT JOIN Fees f ON s.student_id = f.student_id
@@ -49,7 +48,6 @@ if (isset($_POST['search_student'])) {
     $stmt->close();
 }
 
-
 // Insert a new student
 if (isset($_POST['insert_student'])) {
     $first_name = $_POST['first_name'];
@@ -64,16 +62,16 @@ if (isset($_POST['insert_student'])) {
     $session = $_POST['session'];
     $shs_name = $_POST['shs_name'];
     $wassce_index_number = $_POST['wassce_index_number'];
-    
-    // Insert guardian data
+    $student_level = $_POST['student_level'];
     $guardian_first_name = $_POST['guardian_first_name'];
     $guardian_last_name = $_POST['guardian_last_name'];
     $guardian_relation = $_POST['guardian_relation'];
     $guardian_occupation = $_POST['guardian_occupation'];
     $guardian_contact_number = $_POST['guardian_contact_number'];
-    
+
+    // Insert guardian data
     $insert_guardian_sql = "INSERT INTO guardian (guardian_first_name, guardian_last_name, guardian_relation, guardian_occupation, guardian_contact_number) 
-                            VALUES (?, ?, ?, ?, ?)";
+    VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($insert_guardian_sql);
     $stmt->bind_param("sssss", $guardian_first_name, $guardian_last_name, $guardian_relation, $guardian_occupation, $guardian_contact_number);
     $stmt->execute();
@@ -95,24 +93,34 @@ if (isset($_POST['insert_student'])) {
     // Insert student data
     $insert_sql = "INSERT INTO students (
         first_name, middle_name, last_name, birthdate, gender, phone_number, email, nationality, programme_id, session, 
-        shs_name, wassce_index_number, guardian_id, address_id, registration_date, fees_paid, registration_status, 
-        consent_to_keep_data, student_level) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 0, 'pending', 0, 100)";
-        
+        shs_name, wassce_index_number, guardian_id, address_id, registration_date, registration_status, student_level
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'pending', ?)";
+    
     $stmt = $conn->prepare($insert_sql);
-    $stmt->bind_param("ssssssssssssii", 
+    $stmt->bind_param("ssssssssssssiii", 
         $first_name, $middle_name, $last_name, $birthdate, $gender, $phone_number, $email, $nationality, $programme_id, $session, 
-        $shs_name, $wassce_index_number, $guardian_id, $address_id);
+        $shs_name, $wassce_index_number, $guardian_id, $address_id, $student_level);
     
     if ($stmt->execute()) {
+        $student_id = $conn->insert_id;  // Get the newly inserted student_id
         $success_message = "Student inserted successfully.";
+
+        // Insert the initial fee record for this student
+        $fee_sql = "INSERT INTO Fees (student_id, semester, total_due, amount_paid, status) 
+                    VALUES (?, 'Semester 1', 2000.00, 0.00, 'pending')";
+        $stmt_fees = $conn->prepare($fee_sql);
+        $stmt_fees->bind_param("i", $student_id);
+        if ($stmt_fees->execute()) {
+            $success_message .= " Fee record created successfully.";
+        } else {
+            $error_message = "Error inserting fee record: " . $stmt_fees->error;
+        }
+        $stmt_fees->close();
     } else {
         $error_message = "Error inserting student: " . $stmt->error;
     }
     $stmt->close();
 }
-
-
 
 // Update a student
 if (isset($_POST['update_student'])) {
@@ -120,6 +128,7 @@ if (isset($_POST['update_student'])) {
     $first_name = $_POST['first_name'];
     $middle_name = $_POST['middle_name'];
     $last_name = $_POST['last_name'];
+    $student_level = $_POST['student_level'];
     $birthdate = $_POST['birthdate'];
     $gender = $_POST['gender'];
     $phone_number = $_POST['phone_number'];
@@ -130,8 +139,7 @@ if (isset($_POST['update_student'])) {
     $shs_name = $_POST['shs_name'];
     $wassce_index_number = $_POST['wassce_index_number']; 
     $registration_status = $_POST['registration_status'];
-    $fees_paid = $_POST['fees_paid'];
-    
+ 
     // Update guardian data
     $guardian_first_name = $_POST['guardian_first_name'];
     $guardian_last_name = $_POST['guardian_last_name'];
@@ -158,26 +166,64 @@ if (isset($_POST['update_student'])) {
     $stmt->execute();
     $stmt->close();
     
-    // Update student data
+
+   // Update student data
     $update_sql = "UPDATE students SET 
-        first_name = ?, middle_name = ?, last_name = ?, birthdate = ?, gender = ?, phone_number = ?, email = ?, 
-        nationality = ?, programme_id = ?, session = ?, shs_name = ?, wassce_index_number = ?, registration_status = ?, 
-        fees_paid = ?, consent_to_keep_data = ? 
-        WHERE student_id = ?";
-    
+    first_name = ?, middle_name = ?, last_name = ?, birthdate = ?, gender = ?, phone_number = ?, email = ?, 
+    nationality = ?, programme_id = ?, session = ?, shs_name = ?, wassce_index_number = ?, registration_status = ?, 
+    student_level = ? 
+    WHERE student_id = ?";
+
     $stmt = $conn->prepare($update_sql);
-    $stmt->bind_param("sssssssssssssiii", 
-        $first_name, $middle_name, $last_name, $birthdate, $gender, $phone_number, $email, $nationality, $programme_id, $session, 
-        $shs_name, $wassce_index_number, $registration_status, $fees_paid, $consent_to_keep_data, $student_id);
+    $stmt->bind_param("sssssssssssssii", 
+    $first_name, $middle_name, $last_name, $birthdate, $gender, $phone_number, $email, $nationality, 
+    $programme_id, $session, $shs_name, $wassce_index_number, $registration_status, $student_level, $student_id); // Correct placeholders
 
     if ($stmt->execute()) {
-        $success_message = "Student updated successfully.";
+    $success_message = "Student updated successfully.";
     } else {
-        $error_message = "Error updating student: " . $stmt->error;
+    $error_message = "Error updating student: " . $stmt->error;
     }
     $stmt->close();
+
+
+// Update student fees data
+$amount_paid = $_POST['amount_paid']; // Get the amount_paid from the form
+
+// First, retrieve the total_due from the fees table to calculate the status
+$fetch_fees_sql = "SELECT total_due FROM fees WHERE student_id = ?";
+$stmt_fees_fetch = $conn->prepare($fetch_fees_sql);
+$stmt_fees_fetch->bind_param("i", $student_id);
+$stmt_fees_fetch->execute();
+$result_fees = $stmt_fees_fetch->get_result();
+$fee_row = $result_fees->fetch_assoc();
+$total_due = $fee_row['total_due'];
+
+$stmt_fees_fetch->close();
+
+// Determine the status based on amount_paid
+if ($amount_paid >= $total_due) {
+    $status = 'paid';
+} elseif ($amount_paid > 0) {
+    $status = 'partially_paid';
+} else {
+    $status = 'pending';
 }
 
+// Update the fees table with both amount_paid and status
+$update_fees_sql = "UPDATE fees SET amount_paid = ?, status = ? WHERE student_id = ?";
+
+$stmt_fees = $conn->prepare($update_fees_sql);
+$stmt_fees->bind_param("dsi", $amount_paid, $status, $student_id);
+
+if ($stmt_fees->execute()) {
+    $success_message = "Fees updated successfully.";
+} else {
+    $error_message = "Error updating fees: " . $stmt_fees->error;
+}
+
+$stmt_fees->close();
+}
 
 // Delete a student
 if (isset($_POST['delete_student'])) {
@@ -196,6 +242,7 @@ if (isset($_POST['delete_student'])) {
 
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -449,8 +496,8 @@ $conn->close();
     <label for="registration_status">Registration Status:</label>
     <input type="text" id="registration_status" name="registration_status" value="<?php echo isset($searched_student) ? $searched_student['registration_status'] : ''; ?>" required>
 
-    <label for="fees_paid">Fees Paid:</label>
-    <input type="number" id="fees_paid" name="fees_paid" value="<?php echo isset($searched_student) ? $searched_student['amount_paid'] : ''; ?>" required>
+    <label for="amount_paid">Fees Paid:</label>
+    <input type="number" id="amount_paid" name="amount_paid" value="<?php echo isset($searched_student) ? $searched_student['amount_paid'] : ''; ?>" required>
 
     <input type="submit" name="update_student" value="Update Student">
 </form>

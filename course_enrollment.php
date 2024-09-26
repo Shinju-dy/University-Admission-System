@@ -112,6 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <div class="enroll-container">
 <h2>Course Enrollment - <?php echo $current_semester; ?></h2>
+<p>COURSE PROVIDED FOR THE PURPOSE OF THIS PROJECT ARE JUST FOR THE FIRST SEMESTER OF FIRST YEAR</p>
 
 <?php if (isset($success_message)): ?>
     <p style="color: green;"><?php echo $success_message; ?></p>

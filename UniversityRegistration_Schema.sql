@@ -2,8 +2,6 @@ CREATE DATABASE UniversityRegistration;
 USE UniversityRegistration;
 
 
-
-
 -- Drop tables in reverse order of dependency to avoid foreign key constraint issues
 -- USE UniversityRegistration;
 -- DROP TABLE IF EXISTS Fees;
@@ -110,10 +108,8 @@ CREATE TABLE students (
     wassce_index_number VARCHAR(15), 
     programme_id INT(11) NOT NULL, 
     session VARCHAR(50) NOT NULL, 
-    registration_date DATE DEFAULT CURRENT_DATE, 
-    fees_paid TINYINT(1) DEFAULT 0, 
+    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
     registration_status VARCHAR(50) DEFAULT 'pending', -- or completed
-    consent_to_keep_data TINYINT(1) DEFAULT 0,
     guardian_id INT(11),
     address_id INT(11),
     FOREIGN KEY (programme_id) REFERENCES Programme(Programme_id),
@@ -139,8 +135,9 @@ CREATE TABLE Fees (
     amount_paid DECIMAL(10, 2) DEFAULT 0.00,
     date_paid DATE,
     status VARCHAR(20) DEFAULT 'pending',  -- 'pending', 'partially_paid', 'paid'
-    FOREIGN KEY (student_id) REFERENCES Students(student_id)
+    FOREIGN KEY (student_id) REFERENCES Students(student_id) ON DELETE CASCADE
 );
+
 
 -- INSERT statements
 INSERT INTO Faculty (faculty_name) 

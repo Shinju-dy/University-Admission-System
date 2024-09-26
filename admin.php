@@ -26,10 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
         // Move the applicant's data to the students table, pulling data from application, guardian, and address tables
         $move_sql = "INSERT INTO students (student_id, first_name, middle_name, last_name, student_level, birthdate, gender, phone_number, email, nationality,
-        shs_name, wassce_index_number, programme_id, session, fees_paid, registration_status, registration_date, guardian_id, address_id)
+        shs_name, wassce_index_number, programme_id, session, registration_status, registration_date, guardian_id, address_id)
 
         SELECT $new_index, a.first_name, a.middle_name, a.last_name, 100, a.birthdate, a.gender, a.phone_number, a.email, a.nationality, 
-        a.shs_name, a.wassce_index_number, a.programme_id, a.session, FALSE, 'pending', NOW(), a.guardian_id, a.address_id
+        a.shs_name, a.wassce_index_number, a.programme_id, a.session,'pending', NOW(), a.guardian_id, a.address_id
         FROM application a
         WHERE a.applicant_id = $applicant_id";
 
